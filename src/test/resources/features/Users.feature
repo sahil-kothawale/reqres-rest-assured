@@ -4,11 +4,12 @@ Feature: Users API scenarios
 Scenario Outline: GET - Single user
   Given login endpoint is "/api/users/<id>"
   When a GET request is sent
-  Then the response status code should be 200
+  Then reponse body is stored in Response.json file
+  And the response status code should be 200
   And the response body should contain user with id <id>
   And the response body should contain the following:
-	  |        email           |  first_name | last_name |
-	  | janet.weaver@reqres.in |    Janet    |  Weaver   |
+    | email                  | first_name   | last_name |
+    | janet.weaver@reqres.in | Janet        | Weaver    |
 Examples:
 | id |
 | 2  |

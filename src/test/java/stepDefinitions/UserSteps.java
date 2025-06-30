@@ -1,12 +1,13 @@
 package stepDefinitions;
 
-import static io.restassured.RestAssured.*;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
+import static io.restassured.RestAssured.*;
 import io.restassured.response.Response;
-import utilities.ConfigReader;
-import static org.hamcrest.Matchers.*;
 import java.util.Map;
+import static org.hamcrest.Matchers.*;
+import utilities.*;
+
 
 public class UserSteps {
 	
@@ -20,8 +21,7 @@ public class UserSteps {
 	
 	@When("a GET request is sent")
 	public void getRequestIsSent() {
-		String baseUrl = ConfigReader.getProperty("base_url");
-		response = when().get(baseUrl + endpoint);
+		response = when().get(endpoint);
 	}
 	
 	@Then("the response status code should be {int}")
@@ -29,16 +29,22 @@ public class UserSteps {
 		response.then().statusCode(responseCode);
 	}
 	
+	@Then("reponse body is stored in Response.json file")
+	public void reponseBodyIsStoredInResponseJsonFile() {
+		String responseBody = response.getBody().asPrettyString();
+		ResponseHelper.writeResponseToJsonFile(responseBody, "Response");
+	}
+	
 	@Then("the response body should contain user with id {int}")
 	public void responseBodyShouldContainUserWithId(int id) {
-		response.then().body("id", equalTo(id));
+		response.then().body("data.id", equalTo(id));
 	}
 	
 	@Then("the response body should contain the following:")
 	public void responseBodyShouldContainTheFollowing(DataTable table) {
-		Map<String, String> data = table.asMap();
+		Map<String, String> data = table.asMaps().get(0);
 		for(Map.Entry<String, String> entry: data.entrySet()) {
-			response.then().body(entry.getKey(), equalTo(entry.getValue()));
+			response.then().body("data." + entry.getKey(), equalTo(entry.getValue()));
 		}
 	}
 }
