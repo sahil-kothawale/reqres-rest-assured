@@ -1,6 +1,15 @@
 Feature: Users API scenarios
 
-@runThis
+@UserAPI @runThis
+Scenario Outline: POST - Create user
+  Given login endpoint is "/api/users"
+  And user loads create user request body from "CreateUser.json"
+  When a POST request for creating user is sent
+  Then reponse body is stored in "CreateUserResponse".json file
+  And the response status code should be 201
+  And the response body should contain new generated id
+  
+@UserAPI
 Scenario Outline: GET - Single user
   Given login endpoint is "/api/users/<id>"
   When a GET request is sent
@@ -14,7 +23,30 @@ Examples:
 | id |
 | 2  |
 
+@UserAPI @runThis
+Scenario Outline: Update - Existing user
+  Given login endpoint is "/api/users/<id>"
+  And user loads create user request body from "CreateUser.json"
+  And update the user request body as:
+	  |   name  |    job     |
+	  | Chihiro |  Swordsman |
+  When a PUT request for updating user is sent
+  Then reponse body is stored in "UpdateUserResponse".json file
+  And the response status code should be 200
+Examples:
+| id  |
+| 633 |
 
+@UserAPI @runThis
+Scenario Outline: DELETE - Existing user
+  Given login endpoint is "/api/users/<id>"
+  When a DELETE request for deleting user is sent
+  Then the response status code should be 204
+Examples:
+| id  |
+| 633 |
+
+@UserAPI
 Scenario Outline: GET - List of users
   Given login endpoint is "/api/users?page=<pageId>"
   When a GET request is sent
@@ -24,35 +56,3 @@ Scenario Outline: GET - List of users
 Examples:
 | pageId |
 |   3    |
-
-
-Scenario Outline: POST - Create user
-  Given login endpoint is "/api/users"
-  And the request body is:
-	  |   name  |     job     |
-	  | Chihiro |  Swordsmith |
-  When a POST request is sent
-  Then the response status code should be 201
-  And the response body should contain new generated id
-
-
-Scenario Outline: Update - Existing user
-  Given login endpoint is "/api/users/<id>"
-  And the request body is:
-	  |   name  |    job     |
-	  | Chihiro |  Swordsman |
-  When a PUT request is sent
-  Then the response status code should be 200
-Examples:
-| id |
-| 2  |
-
-
-Scenario Outline: DELETE - Existing user
-  Given login endpoint is "/api/users/<id>"
-  When a DELETE request is sent
-  Then the response status code should be 204
-Examples:
-| id |
-| 2  |
-
